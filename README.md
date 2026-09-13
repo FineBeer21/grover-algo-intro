@@ -8,9 +8,7 @@ After encountering Grover's algorithm through the 3Blue1Brown channel, I found m
 
 It is best to release the urge to think about a qubit as a physical particle with mysterious properties. Instead, treat it simply as a **state vector**. When inspected (measured), this vector collapses into one of the basis vectors.
 
-$$
-|\psi\rangle = \alpha|0\rangle + \beta|1\rangle \xrightarrow{\text{Measurement}} \begin{cases} |0\rangle \text{ with probability } |\alpha|^2 \\ |1\rangle \text{ with probability } |\beta|^2 \end{cases}
-$$
+$$\vert{}\psi\rangle = \alpha\vert{}0\rangle + \beta\vert{}1\rangle \xrightarrow{\text{Measurement}} \begin{cases} \vert{}0\rangle & \text{with probability } \vert{}\alpha\vert{}^2 \\ \vert{}1\rangle & \text{with probability } \vert{}\beta\vert{}^2 \end{cases}$$
 
 Like classical bits, an $n$-qubit system has $2^n$ possible states. Each possible state occupies its own row in the state vector in a predetermined order. 
 
