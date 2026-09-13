@@ -14,13 +14,14 @@ $$
 
 Like classical bits, an $n$-qubit system has $2^n$ possible states. Each possible state occupies its own row in the state vector in a predetermined order. 
 
-> **Born's Rule:** The number assigned to each state is its **probability amplitude**. If you take the absolute square of an amplitude, you get the actual probability of the system collapsing into that state. Because probabilities must add up to 100%, the sum of all absolute squared amplitudes is strictly $1$.
-
 For a single qubit, $|0\rangle$ and $|1\rangle$ represent the standard basis vectors. A 2D quantum state is just a linear combination of these basis vectors, with the amplitudes serving as coefficients. A qubit with a state vector containing more than one non-zero amplitude is in **superposition**.
 
 $$
 |\psi\rangle = \begin{pmatrix} \alpha \\ \beta \end{pmatrix} = \alpha \begin{pmatrix} 1 \\ 0 \end{pmatrix} + \beta \begin{pmatrix} 0 \\ 1 \end{pmatrix}
 $$
+
+> **Born's Rule:** The number assigned to each state is its **probability amplitude**. If you take the absolute square of an amplitude, you get the actual probability of the system collapsing into that state. Because probabilities must add up to 100%, the sum of all absolute squared amplitudes is strictly $1$.
+
 
 Because of quantum mechanics, you can never interact directly with the state vector to read its raw values. Measuring it forces a collapse. Therefore, to compute anything, you must manipulate the state vector blindly using **quantum gates**.
 
@@ -154,4 +155,4 @@ $$
 
 $$
 U(\alpha|x\rangle + \beta|y\rangle) = \alpha U|x\rangle + \beta U|y\rangle
-$$ה
+$$
