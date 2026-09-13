@@ -9,11 +9,7 @@ After encountering Grover's algorithm through the 3Blue1Brown channel, I found m
 It is best to release the urge to think about a qubit as a physical particle with mysterious properties. Instead, treat it simply as a **state vector**. When inspected (measured), this vector collapses into one of the basis vectors.
 
 $$
-|\psi\rangle = \alpha|0\rangle + \beta|1\rangle \xrightarrow{\text{Measurement}} 
-\begin{cases} 
-|0\rangle \text{ with probability } |\alpha|^2 \\ 
-|1\rangle \text{ with probability } |\beta|^2 
-\end{cases}
+|\psi\rangle = \alpha|0\rangle + \beta|1\rangle \xrightarrow{\text{Measurement}} \begin{cases} |0\rangle \text{ with probability } |\alpha|^2 \\ |1\rangle \text{ with probability } |\beta|^2 \end{cases}
 $$
 
 Like classical bits, an $n$-qubit system has $2^n$ possible states. Each possible state occupies its own row in the state vector in a predetermined order. 
@@ -23,21 +19,7 @@ Like classical bits, an $n$-qubit system has $2^n$ possible states. Each possibl
 For a single qubit, $|0\rangle$ and $|1\rangle$ represent the standard basis vectors. A 2D quantum state is just a linear combination of these basis vectors, with the amplitudes serving as coefficients. A qubit with a state vector containing more than one non-zero amplitude is in **superposition**.
 
 $$
-|\psi\rangle = 
-\begin{pmatrix} 
-\alpha \\ 
-\beta 
-\end{pmatrix} 
-= \alpha 
-\begin{pmatrix} 
-1 \\ 
-0 
-\end{pmatrix} 
-+ \beta 
-\begin{pmatrix} 
-0 \\ 
-1 
-\end{pmatrix}
+|\psi\rangle = \begin{pmatrix} \alpha \\ \beta \end{pmatrix} = \alpha \begin{pmatrix} 1 \\ 0 \end{pmatrix} + \beta \begin{pmatrix} 0 \\ 1 \end{pmatrix}
 $$
 
 Because of quantum mechanics, you can never interact directly with the state vector to read its raw values. Measuring it forces a collapse. Therefore, to compute anything, you must manipulate the state vector blindly using **quantum gates**.
@@ -48,25 +30,7 @@ Do not think of a quantum gate as a physical object made from silicon transistor
 * **Quantum NOT Gate (Pauli-X):**
 
 $$
-X = 
-\begin{pmatrix} 
-0 & 1 \\ 
-1 & 0 
-\end{pmatrix} 
-\quad \implies \quad 
-\begin{pmatrix} 
-0 & 1 \\ 
-1 & 0 
-\end{pmatrix} 
-\begin{pmatrix} 
-\alpha \\ 
-\beta 
-\end{pmatrix} 
-= 
-\begin{pmatrix} 
-\beta \\ 
-\alpha 
-\end{pmatrix}
+X = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix} \quad \implies \quad \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix} \begin{pmatrix} \alpha \\ \beta \end{pmatrix} = \begin{pmatrix} \beta \\ \alpha \end{pmatrix}
 $$
 
 It’s important to note that you cannot just invent any matrix and call it a gate. Quantum gates are physically constrained (they must be unitary and reversible). Quantum computers aren't universally faster than classical ones; they only excel in highly specific areas where clever algorithms exploit these limited matrix operations.
@@ -78,39 +42,13 @@ It’s important to note that you cannot just invent any matrix and call it a ga
 For simplicity, I will explain the core concepts using a small number of qubits, but this expands directly to larger systems. In reality, large matrices (like a NOT gate applied to 2 qubits simultaneously) are simply the Kronecker product of the basic $2 \times 2$ matrices that assemble them.
 
 $$
-X \otimes X = 
-\begin{pmatrix} 
-0 & 1 \\ 
-1 & 0 
-\end{pmatrix} 
-\otimes 
-\begin{pmatrix} 
-0 & 1 \\ 
-1 & 0 
-\end{pmatrix} 
-= 
-\begin{pmatrix} 
-0 & 0 & 0 & 1 \\ 
-0 & 0 & 1 & 0 \\ 
-0 & 1 & 0 & 0 \\ 
-1 & 0 & 0 & 0 
-\end{pmatrix}
+X \otimes X = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix} \otimes \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix} = \begin{pmatrix} 0 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0 \\ 0 & 1 & 0 & 0 \\ 1 & 0 & 0 & 0 \end{pmatrix}
 $$
 
 To start a quantum algorithm, we initialize the system in a "pure" state of all zeros, and immediately put it into a uniform superposition so every possible answer has an equal amplitude. For a system with $N$ states, every amplitude becomes $\frac{1}{\sqrt{N}}$. The gate that performs this is the **Hadamard (H) gate**:
 
 $$
-H = \frac{1}{\sqrt{2}} 
-\begin{pmatrix} 
-1 & 1 \\ 
-1 & -1 
-\end{pmatrix} 
-\quad \implies \quad 
-H|0\rangle = \frac{1}{\sqrt{2}}
-\begin{pmatrix} 
-1 \\ 
-1 
-\end{pmatrix}
+H = \frac{1}{\sqrt{2}} \begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix} \quad \implies \quad H|0\rangle = \frac{1}{\sqrt{2}} \begin{pmatrix} 1 \\ 1 \end{pmatrix}
 $$
 
 Grover’s algorithm relies on manipulating these amplitudes in two repeating steps:
@@ -131,25 +69,13 @@ In principle, every problem has its own specific Oracle. The goal is to create a
 In my implementation, I want my target to be the state of all ones, $|11\dots1\rangle$. Therefore, I need to flip only the amplitude of that specific state. If we look at the simplest setup of just one qubit (a 2D vector), it's like wanting to flip only the y-axis component.
 
 $$
-\begin{pmatrix} 
-\alpha \\ 
-\beta 
-\end{pmatrix} 
-\xrightarrow{\text{Oracle}} 
-\begin{pmatrix} 
-\alpha \\ 
--\beta 
-\end{pmatrix}
+\begin{pmatrix} \alpha \\ \beta \end{pmatrix} \xrightarrow{\text{Oracle}} \begin{pmatrix} \alpha \\ -\beta \end{pmatrix}
 $$
 
 Those who remember their linear algebra well can already guess what that matrix looks like:
 
 $$
-Z = 
-\begin{pmatrix} 
-1 & 0 \\ 
-0 & -1 
-\end{pmatrix}
+Z = \begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix}
 $$
 
 For a single qubit, this operation is called the **Pauli-Z gate**. For multiple qubits, we need an **MCZ (Multi-Controlled Z)** gate, which phase-flips only the $|11\dots1\rangle$ state in the state vector (the very last amplitude).
@@ -167,17 +93,7 @@ $$
 To achieve this using the X gate, I’ll introduce two common basis vectors used in quantum algorithms: $|+\rangle$ and $|-\rangle$.
 
 $$
-|+\rangle = \frac{1}{\sqrt{2}}
-\begin{pmatrix} 
-1 \\ 
-1 
-\end{pmatrix}, 
-\quad 
-|-\rangle = \frac{1}{\sqrt{2}}
-\begin{pmatrix} 
-1 \\ 
--1 
-\end{pmatrix}
+|+\rangle = \frac{1}{\sqrt{2}} \begin{pmatrix} 1 \\ 1 \end{pmatrix}, \quad |-\rangle = \frac{1}{\sqrt{2}} \begin{pmatrix} 1 \\ -1 \end{pmatrix}
 $$
 
 Notice what happens if we pass them through a NOT (X) gate:
@@ -203,26 +119,7 @@ Because the Hadamard matrix is its own inverse, we can switch the basis back to 
 One way to prove this is through straightforward matrix multiplication:
 
 $$
-\frac{1}{\sqrt{2}}
-\begin{pmatrix} 
-1 & 1 \\ 
-1 & -1 
-\end{pmatrix} 
-\begin{pmatrix} 
-0 & 1 \\ 
-1 & 0 
-\end{pmatrix} 
-\frac{1}{\sqrt{2}}
-\begin{pmatrix} 
-1 & 1 \\ 
-1 & -1 
-\end{pmatrix} 
-= 
-\begin{pmatrix} 
-1 & 0 \\ 
-0 & -1 
-\end{pmatrix} 
-= Z
+\frac{1}{\sqrt{2}} \begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix} \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix} \frac{1}{\sqrt{2}} \begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix} = \begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix} = Z
 $$
 
 A much more interesting approach is to acknowledge that the two eigenvectors of the NOT matrix are $|+\rangle$ and $|-\rangle$, with eigenvalues of $1$ and $-1$ respectively. The NOT matrix essentially flips the space around $|+\rangle$. If we rotate the space beforehand so that the unwanted answers land on $|+\rangle$, and then rotate it back afterwards, the entire operation leaves the unwanted answers completely unaffected while perfectly flipping the sign of our target.
@@ -257,4 +154,4 @@ $$
 
 $$
 U(\alpha|x\rangle + \beta|y\rangle) = \alpha U|x\rangle + \beta U|y\rangle
-$$
+$$ה
