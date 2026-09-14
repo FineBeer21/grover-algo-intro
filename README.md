@@ -18,7 +18,16 @@ It is best to release the urge to think about a qubit as a physical particle wit
 ```
 
 <br>
+
 Like classical bits, an $n$-qubit system has $2^n$ possible states. Each possible state occupies its own row in the state vector in a predetermined order. 
+
+<br>
+
+```math
+|\psi\rangle = \begin{pmatrix} \alpha \\ \beta \\ \gamma \\ \delta \end{pmatrix} = \alpha|00\rangle + \beta|01\rangle + \gamma|10\rangle + \delta|11\rangle
+```
+
+<br>
 
 > **Born's Rule:** The number assigned to each state is its **probability amplitude**. If you take the absolute square of an amplitude, you get the actual probability of the system collapsing into that state. Because probabilities must add up to 100%, the **sum of all absolute squared amplitudes is strictly $1$**.
 
@@ -43,7 +52,7 @@ X = \begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix} \quad \implies \quad \begin{pma
 ```
 <br>
 
-It’s important to note that you cannot just invent any matrix and call it a gate. **Quantum gates are physically constrained** (they must be unitary and reversible). Quantum computers aren't universally faster than classical ones; they only excel in highly specific areas where clever algorithms exploit these limited matrix operations.
+It’s important to note that you cannot just invent any matrix and call it a gate. **Quantum gates are physically constrained** (they must be unitary). Quantum computers aren't universally faster than classical ones; they only excel in highly specific areas where clever algorithms exploit these limited matrix operations.
 
 ---
 
@@ -160,7 +169,7 @@ One way to prove this is through straightforward matrix multiplication:
 ```
 <br>
 
-A much more interesting approach is to acknowledge that the two **eigenvectors** of the NOT matrix are $|+\rangle$ and $|-\rangle$, with **eigenvalues** of $1$ and $-1$ respectively. The NOT matrix essentially flips the space around $|+\rangle$. If we rotate the space beforehand so that the unwanted answers land on $|+\rangle$, and then rotate it back afterwards, the entire operation leaves the unwanted answers completely unaffected while perfectly flipping the sign of our target.
+In my opinion, a much more interesting approach is to acknowledge that the two **eigenvectors** of the NOT matrix are $|+\rangle$ and $|-\rangle$, with **eigenvalues** of $1$ and $-1$ respectively. The NOT matrix essentially flips the space around $|+\rangle$. If we rotate the space beforehand so that the unwanted answers land on $|+\rangle$, and then rotate it back afterwards, the entire operation leaves the unwanted answers completely unaffected while perfectly flipping the sign of our target.
 
 ---
 
