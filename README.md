@@ -133,7 +133,9 @@ X|-\rangle = -|-\rangle
 ```
 
 <br>
+
 These two vectors are orthonormal to each other, meaning they **form a valid basis**. If we want an operation that phase-flips only $|1\rangle$ and leaves $|0\rangle$ alone, we need to temporarily **change our basis** so that $|1\rangle$ lands on $|-\rangle$ and $|0\rangle$ lands on $|+\rangle$. We do exactly that with the Hadamard gate.
+
 <br>
 
 ```math
@@ -146,7 +148,9 @@ H|1\rangle = |-\rangle
 ```
 
 <br>
-Because the Hadamard matrix is its own inverse, we can switch the basis back to the original simply by applying another Hadamard. **In summary:** $H \to X \to H = Z$.
+Because the Hadamard matrix is its own inverse, we can switch the basis back to the original simply by applying another Hadamard. In summary:
+
+$H \to X \to H = Z$.
 
 One way to prove this is through straightforward matrix multiplication:
 <br>
@@ -201,6 +205,7 @@ U(\alpha|x\rangle + \beta|y\rangle) = \alpha U|x\rangle + \beta U|y\rangle
 We know we want to reflect every amplitude around the **mean** of all amplitudes, but what does that actually "mean" in algebra? Let's say one specific amplitude is $x$, the overall mean is $m$, and the new reflected value of $x$ is $x^*$. 
 
 Geometrically, the distance from $x$ to the mean must equal the distance from the mean to $x^*$:
+
 <br>
 
 ```math
@@ -208,7 +213,16 @@ x - m = m - x^* \implies x^* = 2m - x
 ```
 <br>
 
-For example, if we have a vector $\begin{pmatrix} 3 \\ 1 \end{pmatrix}$, the mean of its components is $2$. By applying our formula to each axis, we get:
+For example, if we have a vector:
+
+```math
+\begin{pmatrix} 3 \\ 1 \end{pmatrix}
+```
+
+<br>
+
+the mean of its components is $2$ . By applying our formula to each axis, we get:
+
 <br>
 
 ```math
@@ -216,6 +230,7 @@ For example, if we have a vector $\begin{pmatrix} 3 \\ 1 \end{pmatrix}$, the mea
 ```
 
 <br>
+
 If the mean happens to be exactly zero, the formula simply becomes $x^* = -x$, meaning we just **phase-flip every amplitude**. It’s also important to note that the mean itself never changes during this transformation.
 
 But how do we find the mean mathematically? In a 2D plane, consider the line $y=x$. If we take any point $(a, b)$ in space and drop a perpendicular line onto that diagonal, the intersection point will be exactly $(\frac{a+b}{2}, \frac{a+b}{2})$. In linear algebra terms, you find the mean of a vector's amplitudes by **projecting it onto the main diagonal** (using a dot product). 
@@ -223,6 +238,7 @@ But how do we find the mean mathematically? In a 2D plane, consider the line $y=
 Therefore, a vector composed entirely of the mean will always lie on the diagonal subspace of the plane. Reflecting our state vector around the mean literally "means" reflecting it around a vector contained in the span of $(1, 1, 1 \dots 1)$. 
 
 In quantum mechanics, the normalized vector representing this exact diagonal span is the **uniform superposition state**, often denoted as $|s\rangle$. We can easily create it by applying Hadamard gates to the zero state:
+
 <br>
 
 ```math
@@ -230,6 +246,7 @@ In quantum mechanics, the normalized vector representing this exact diagonal spa
 ```
 
 <br>
+
 So, our goal is to reflect all the amplitudes around $|s\rangle$. But, as we learned from the Oracle process, there is no basic gate that magically does that. Instead, we have to build it using **three clever tricks**.
 
 #### Trick 1: Rotate the Space
@@ -239,6 +256,7 @@ We can rotate the entire vector space such that the diagonal $|s\rangle$ lands p
 #### Trick 2: The Global Phase Illusion
 
 Now that our target reflection line is sitting on $|00\dots0\rangle$, it’s clear we want to reflect all the values around this first axis. Reflecting a vector around an axis is geometrically identical to **flipping the sign of every single component in the vector *except* the one on that axis**. 
+
 <br>
 
 ```math
@@ -246,13 +264,17 @@ Now that our target reflection line is sitting on $|00\dots0\rangle$, it’s cle
 ```
 
 <br>
+
 Here is the quantum catch: because physical probability is the absolute squared value of the amplitudes, a **global minus sign** doesn't change the physical state of the vector at all. Factoring out a negative sign proves that flipping every axis *except* the first one is mathematically and physically identical to flipping *only* the first axis!
+
 <br>
 
 ```math
 \begin{pmatrix} a \\ -b \\ -c \\ -d \end{pmatrix} = - \begin{pmatrix} -a \\ b \\ c \\ d \end{pmatrix} \equiv \begin{pmatrix} -a \\ b \\ c \\ d \end{pmatrix}
 ```
+
 <br>
+
 #### Trick 3: Reusing the Oracle Logic
 
 We are now at a point where we know we just need to sign-flip the $|00\dots0\rangle$ axis. There’s no single quantum gate that does that. However, in the Oracle step, we already constructed an MCZ gate that flips the $|11\dots1\rangle$ axis (the very last one). 
@@ -264,6 +286,7 @@ So, to execute the final maneuver, we just need to:
 4. Use another **Hadamard gate** to rotate the vector space back to its original orientation.
 
 The complete Diffusion step is a beautiful sandwich of logic gates:
+
 <br>
 
 ```math
@@ -271,6 +294,7 @@ H \to X \to (H \to MCX \to H) \to X \to H
 ```
 
 <br>
+
 ---
 
 ### A Note on the Physics and Hardware
@@ -300,6 +324,7 @@ Throughout the entire algorithm, our state vector only ever lives in a 2D plane 
 When we initialize our system in the uniform state $|s\rangle$, the vector is incredibly close to the "Wrong" axis because there is only one right answer and millions of wrong ones. The starting angle $\theta$ between our vector and the "Wrong" axis is determined by the target's initial amplitude, which is $\frac{1}{\sqrt{N}}$.
 
 Using basic trigonometry, the sine of this starting angle is:
+
 <br>
 
 ```math
@@ -319,6 +344,7 @@ A fundamental rule in geometry states that performing two reflections across two
 Our goal is to rotate the vector from its starting position (almost flat on the "Wrong" axis) all the way up to the Target axis, which is exactly a $90^\circ$ rotation, or $\frac{\pi}{2}$ radians.
 
 To find out how many steps it takes, we simply divide the total angular distance we need to travel by the angular distance we travel in each step:
+
 <br>
 
 ```math
@@ -330,3 +356,25 @@ To find out how many steps it takes, we simply divide the total angular distance
 <p align="center">
   <img src="assets/rotation_graph.png" alt="Diffusion Graph" width="400">
 </p>
+
+
+---
+
+### A Final Note: Simulation vs. Real Hardware
+
+You might wonder: if this entire process is just matrix multiplication, why can't we just write a classical Python script to do it? 
+
+Even if we copy this process to classical cpu and rotate the space the correct amount of iterations, we're still left with a massive array of $N$ probability amplitudes. To actually figure out which state has the highest squared amplitude, we have to search through that entire array. Finding the max value in an array is an $O(N)$ operation. So, doing this classically completely defeats the purpose. 
+
+In a real quantum computer, we don't have to search the array. We just measure the system. The wave collapses, and the highest-probability answer simply drops out.
+
+**The Physical Hardware Tax**
+
+On the other hand, there is a physical constraint we didn't adress. When computer scientists say Grover takes $O(\sqrt{N})$ time, they are refering the number of *Oracle iterations*. We've been treating the Oracle and Diffusion blocks like they happen in a single step. 
+
+But as mentioned earlier, a real quantum gate only operates on one or two qubits at a time. The compiler breaks our massive MCX gates down into a long sequence of simpler physical gates. If $n$ is the number of qubits, constructing that MCX gate takes roughly $O(n)$ physical operations. 
+
+Since the total number of states is $N = 2^n$, the physical time it takes to execute one iteration scales by $n$, which is $\log_2(N)$. So, if you measure the actual clock time the machine takes to run the algorithm, it’s not purely $O(\sqrt{N})$. It is technically:
+
+```math
+O(\log_2(N)\sqrt{N})
