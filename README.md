@@ -387,3 +387,28 @@ Since the total number of states is $N = 2^n$, the physical time it takes to exe
 
 ```math
 O(\log_2(N)\sqrt{N})
+```
+
+---
+
+# Classical Simulation
+
+In the accompanying code, I run the Oracle-Diffusion cycle on IBM’s Qiskit simulator, scaling from 2 up to 20 qubits. The script tracks both the physical execution time and the total number of theoretical calculations. This demonstrates exactly how the algorithm is supposed to scale mathematically, while exposing the physical limits of simulating quantum mechanics on a classical C++ backend. 
+
+A few technical details about the benchmark graphs are worth highlighting:
+
+1. **The Initialization Overhead:** You will notice that running a 2-qubit circuit takes significantly longer than 3 qubits, which seems physically backwards. This is a classic software quirk: during the very first run, Qiskit spends time loading libraries, compiling code, and allocating memory. I left this outlier in the data because it reflects real software behavior rather than abstract math.
+2. **The System Overhead Plateau:** On the logarithmic scale, execution time barely changes between 3 and 7 qubits. Matrix multiplications of that scale take a modern CPU fractions of a microsecond. The ~47 milliseconds in that flatline is purely the overhead of Python and the operating system dispatching jobs. Only around 12–13 qubits do the matrices get large enough ($4096 \times 4096$) for the linear algebra to become the primary bottleneck.
+3. **Visualizing $\sqrt{N}$ vs. $n$:** I plotted the calculation count against $N$ (Total States) rather than $n$ (qubits). If plotted against $n$, the curve would appear exponential because $O(\sqrt{2^n}) = O(1.41^n)$. Plotting against $N$ clearly displays the flattened curve characteristic of a square root function, visually demonstrating how Grover drastically undercuts classical $O(N)$ random search.
+
+<br>
+
+<p align="center">
+  <img src="assets/simulation_analysis.png" alt="Simulation Benchmark Graphs" width="90%">
+</p>
+
+<br>
+
+The data highlights the practical "time wall" of classical simulation. Jumping from 50 milliseconds to 34 seconds simply by adding a few qubits demonstrates why simulating a 50-qubit system would take years on standard hardware. 
+
+*(Note: The full benchmark data is available in `grover_benchmark.csv` for independent plotting and verification).*
