@@ -379,7 +379,7 @@ In a real quantum computer, we don't have to search the array. We just measure t
 
 **The Physical Hardware Tax**
 
-On the other hand, there is a physical constraint we didn't adress. When computer scientists say Grover takes $O(\sqrt{N})$ time, they are refering the number of *Oracle iterations*. We've been treating the Oracle and Diffusion blocks like they happen in a single step. 
+On the other hand, there is a physical constraint we didn't address. When computer scientists say Grover takes $O(\sqrt{N})$ time, they are referring the number of *Oracle iterations*. We've been treating the Oracle and Diffusion blocks like they happen in a single step. 
 
 But as mentioned earlier, a real quantum gate only operates on one or two qubits at a time. The compiler breaks our massive MCX gates down into a long sequence of simpler physical gates. If $n$ is the number of qubits, constructing that MCX gate takes roughly $O(n)$ physical operations. 
 
