@@ -294,7 +294,7 @@ So, to execute the final maneuver, we just need to:
 3. Apply another **massive X gate** to shift it back to $|00\dots0\rangle$.
 4. Use another **Hadamard gate** to rotate the vector space back to its original orientation.
 
-The complete Diffusion step is a beautiful sandwich of logic gates:
+The complete Diffusion step is a sandwich of logic gates:
 
 <br>
 
@@ -311,14 +311,14 @@ H \to X \to (H \to MCX \to H) \to X \to H
 One might ask: why use a Hadamard gate (which has a determinant of -1 and performs a reflection) just to rotate the vector space, instead of using a pure rotation gate like $R_y$ (which has a determinant of 1)? 
 
 1. **The Global Phase Illusion:** As established earlier, a global minus sign does not affect the physical probability distribution. Geometrically reflecting the space is physically indistinguishable from purely rotating it.
-2. **Self-Inverse Efficiency:** The Hadamard matrix is its own inverse ($H = H^{-1}$). Using it to enter and exit our basis changes makes the algorithm beautifully symmetrical and efficient to write ($H \to \dots \to H$).
-3. **Hardware Stability:** Physically, the Hadamard is a stable, universal quantum gate natively supported across almost all quantum architectures.
+2. **Self-Inverse Efficiency:** The Hadamard matrix is its own inverse ($H = H^{-1}$). Using it to enter and exit our basis changes makes the algorithm beautifully symmetrical and efficient to code ($H \to \dots \to H$).
+3. **Hardware Translation:** While Hadamard is the definitive standard in quantum theory, it is actually not a "native" physical gate on systems like IBM Quantum. However, it is incredibly efficient for the transpiler to construct using just a few basic physical microwave pulses (like $R_z$ and $\sqrt{X}$), making it the optimal logical building block.
 
-Furthermore, just as there is no native MCZ gate in Qiskit, **there is no real physical MCX gate either**. When you send this code to an actual quantum computer, the compiler (transpiler) breaks these massive multi-controlled logical gates down into a long, complex web of simple 1-qubit and 2-qubit physical gates. I will show exactly what this physically compiled circuit looks like in the hardware implementation section below.
+In fact, this exposes a much larger reality about physical hardware: **almost none of the gates in our textbook circuit physically exist**. Just as the Hadamard is translated into microwave pulses, the massive multi-controlled MCX gate is completely synthetic. When you send this code to an actual quantum computer, the transpiler breaks these logical gates down into a long, complex web of simple 1-qubit and 2-qubit native physical gates (such as `sx`, `rz`, and `cz`). I will show exactly what this physically compiled circuit looks like, and the decoherence it causes, in the hardware implementation section below.
 
 ---
 
-### Runtime Complexity: Why $O(\sqrt{N})$?
+### Runtime Complexity
 
 The entire reason Grover's algorithm is famous is its superiority over classical random search, which requires $O(N)$ time. 
 
@@ -369,7 +369,7 @@ To find out how many steps it takes, we simply divide the total angular distance
 
 ---
 
-### A Final Note: Simulation vs. Real Hardware
+### Simulation vs. Real Hardware
 
 You might wonder: if this entire process is just matrix multiplication, why can't we just write a classical Python script to do it? 
 
@@ -412,3 +412,44 @@ A few technical details about the benchmark graphs are worth highlighting:
 The data highlights the practical "time wall" of classical simulation. Jumping from 50 milliseconds to 34 seconds simply by adding a few qubits demonstrates why simulating a 50-qubit system would take years on standard hardware. 
 
 *(Note: The full benchmark data is available in `grover_benchmark.csv` for independent plotting and verification).*
+
+---
+
+# Physical Reality
+
+After validating the algorithm in simulation, I submitted the circuits (for $n=3, 4,$ and $5$) to the IBM Quantum Platform to run on physical quantum processors. Each circuit was executed 1,000 times to observe the real-world probability distributions. 
+
+The results show a couple of interesting facts:
+
+1. **The Decoherence Cliff:** The gap between ideal math and physical reality is stark. For $n=3$, the hardware successfully identified the target state 76.1% of the time. At $n=4$, the success rate dropped to 33.4%. By $n=5$, the target state (`11111`) was measured only 3.7% of the time—barely above the 3.125% threshold of pure random noise. The system completely succumbed to decoherence before the calculation could finish.
+2. **The Anatomy of Noise:** When the machine fails, it doesn't fail entirely randomly. As shown in the graphs, the most frequent incorrect answers are usually those with a Hamming Distance of 1 (states that differ from the correct answer by exactly one bit). This proves that hardware noise is largely a localized, physical phenomenon—individual qubits losing their energy state or flipping over time—rather than the math itself breaking down.
+
+<br>
+<p align="center">
+  <img src="assets/reality_hamming.png" alt="IBM Hardware Histograms" width="65%">
+</p>
+
+<br>
+
+### Transpiling
+
+Below is the circuit diagram for $n=3$ qubits before and after transpilation. You can see that even in the logical phase, the multi-controlled $MCX$ gate doesn't really exist—it's mathematically constructed from Pauli-X and Hadamard gates. 
+
+But after passing through Qiskit's transpiler, even those familiar gates dissolve. The physical IBM hardware only understands a native basis of microwave pulses: $R_z$, $X$, $SX$ (Square-root of X), and $CZ$. Translating our logic into these basic physical pulses causes the gate count to explode. This is the quantum equivalent of compiling high-level Python code down to machine assembly language.
+
+<br>
+<p align="center">
+  <img src="assets/my_grover_circuit.png" alt="Before transpiling" width="100%">
+</p>
+<br>
+
+<p align="center">
+  <img src="assets/physical_grover_circuit.png" alt="After transpiling" width="80%">
+</p>
+<br>
+
+### Why Target `|11...1>`? 
+
+This massive hardware degradation highlights exactly why I chose a simple target state (`|11...1>`) for this benchmark. 
+
+Targeting this specific state allows the Oracle to be built as a highly efficient $H - MCX - H$ sandwich. If we tried to search for a more complex, randomized state or solve a real world logic puzzle the Oracle would require far more gates to construct. That added circuit depth would cause the physical qubits to decohere much earlier. By keeping the Oracle as shallow as possible, we gave the hardware a chance to demonstrate Grover's amplitude amplification before the noise took over. Therefore, reinforcing the argument that QCs are still far from usable.
