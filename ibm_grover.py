@@ -23,7 +23,7 @@ def diffusion(qc, n):
     qc.x(qbits)
     qc.h(qbits)
 
-service = QiskitRuntimeService(channel="ibm_quantum_platform", token="pMinqnlBbBT6kxepjM9zRei34ZSt9C8NhOg0LC2sx6M0") 
+service = QiskitRuntimeService(channel="ibm_quantum_platform", token="token") 
 # We now need a backend with at least 5 qubits
 backend = service.least_busy(operational=True, simulator=False, min_num_qubits=5)
 print(f"sending to backend: {backend.name}")
